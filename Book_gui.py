@@ -24,16 +24,13 @@ class Book_gui(ttk.Frame):
 
     def on_book_selected(self, event):
 
-        def showImage(url):
-            #Åbner url'et
-            fin = urlopen(url)
-            #smider billedet ind i hukommelsen
-            s = io.BytesIO(fin.read())
-            pil_image = Image.open(s)
-            print(pil_image.size)
-            #Returnere det som noget Tkinter kan forstå
-            tk_image = ImageTk.PhotoImage(pil_image)
-            return tk_image
+        def ImgUrl(root, url):
+            global image
+            with urlopen(url) as connection:
+                raw_data = connection.read()
+            im = Image.open(io.BytesIO(raw_data))
+            image = ImageTk.PhotoImage(im)
+            return image
 
 
         curItem = self.db_view.item(self.db_view.focus())['values']
@@ -45,11 +42,10 @@ class Book_gui(ttk.Frame):
             self.can.delete("all")
             print(b.ratings[0]/sum(b.ratings))
             print(b.imgurl)
-            #self.can.create_rectangle(10,190,30,190-200*(b.ratings[0]/sum(b.ratings)))
-            image = showImage(b.imgurl)
-            imagetkinter = tk.Label(root, image=image)
-            imagetkinter.pack()
-
+            self.can.create_rectangle(10,190,30,190-200*(b.ratings[0]/sum(b.ratings)))
+            widget = tk.Label(root, image=ImgUrl(root,b.imgurl))
+            widget.pack()
+            
 
     def slet_bog(self):    
         curItem = self.db_view.item(self.db_view.focus())['values']
