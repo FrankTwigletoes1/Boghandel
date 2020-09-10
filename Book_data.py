@@ -55,7 +55,7 @@ class Books_data:
                 b.forfatter = book["authors"]
                 b.id = int(book['book_id'])
                 b.count = int(book['books_count']) #userstory 6 (viser bøgerne)
-                b.imgurl = book['small_image_url']
+                b.imgurl = book['image_url']
             except:
                 print(book)
 

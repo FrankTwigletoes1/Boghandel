@@ -6,7 +6,6 @@ from PIL import Image, ImageTk
 import io
 import csv
 
-
 class storeIMG():
     def _init_(self, image = None):
         self.image = image
@@ -47,6 +46,7 @@ class Book_gui(ttk.Frame):
                 raw_data = connection.read()
                 print("read data")
             im = Image.open(io.BytesIO(raw_data))
+            im = im.resize((100,150))
             #print(im)
             self.imgS.image = ImageTk.PhotoImage(im)
             #print(self.imgS.image)
@@ -122,6 +122,8 @@ class Book_gui(ttk.Frame):
         self.BH_view.column("#2", width=50)
         self.BH_view.column("#3", width=250)
         self.BH_view.pack()
+
+
         for item in GBH():
             print(item)
             item = item.split(',')
@@ -130,53 +132,51 @@ class Book_gui(ttk.Frame):
 
 
     def rediger_bog(self):
-        def change_book():
-            b.titel = en_titel.get()
-            b.forfatter = en_forfatter.get()
-            self.data.update_book(b)
-            b.give_rating(sc_rating.scale.get())
-            self.opdater_tabel()
-            dlg.destroy()
-            dlg.update()
+            def change_book():
+                b.titel = en_titel.get()
+                b.forfatter = en_forfatter.get()
+                self.data.update_book(b)
+                b.give_rating(sc_rating.scale.get())
+                self.opdater_tabel()
+                dlg.destroy()
+                dlg.update()
 
-        def close():
-            dlg.destroy()
-            dlg.update()
-        
-            
-        dlg = tk.Toplevel()
-        lbl_titel = ttk.Label(dlg, text='Titel')
+            def close():
+                dlg.destroy()
+                dlg.update()
 
-        curItem = self.db_view.item(self.db_view.focus())['values']
 
-        if len(curItem) > 0:
-            b = self.data.get_book(curItem[4])
+            curItem = self.db_view.item(self.db_view.focus())['values']
 
-            lbl_titel = ttk.Label(dlg, text='Titel')
-            lbl_titel.grid(column =0, row = 0)
-            en_titel = ttk.Entry(dlg)
-            en_titel.grid(column=1, row=0)
-            en_titel.delete(0, tk.END)
-            en_titel.insert(0, b.titel)
+            if len(curItem) > 0:
+                b = self.data.get_book(curItem[4])
 
-            lbl_forfatter = ttk.Label(dlg, text='Forfatter')
-            lbl_forfatter.grid(column =0, row = 1)
-            en_forfatter = ttk.Entry(dlg)
-            en_forfatter.grid(column=1, row=1)
-            en_forfatter.delete(0, tk.END)
-            en_forfatter.insert(0, b.forfatter)
+                dlg = tk.Toplevel()
 
-            lbl_rating = ttk.Label(dlg, text='Rating')
-            lbl_rating.grid(column =0, row = 2)
-            sc_rating = ttk.LabeledScale(dlg, from_ = 0, to = 5)
-            sc_rating.value = b.get_rating()
-            sc_rating.grid(column=1, row=2)
+                lbl_titel = ttk.Label(dlg, text='Titel')
+                lbl_titel.grid(column =0, row = 0)
+                en_titel = ttk.Entry(dlg)
+                en_titel.grid(column=1, row=0)
+                en_titel.delete(0, tk.END)
+                en_titel.insert(0, b.titel)
 
-            but_annuller = ttk.Button(dlg, text="Annuller", command=close)
-            but_annuller.grid(column=1,row=3)
-            but_ok = ttk.Button(dlg, text="Gem ændringer", command=change_book)
-            but_ok.grid(column=0,row=3)
+                lbl_forfatter = ttk.Label(dlg, text='Forfatter')
+                lbl_forfatter.grid(column =0, row = 1)
+                en_forfatter = ttk.Entry(dlg)
+                en_forfatter.grid(column=1, row=1)
+                en_forfatter.delete(0, tk.END)
+                en_forfatter.insert(0, b.forfatter)
 
+                lbl_rating = ttk.Label(dlg, text='Rating')
+                lbl_rating.grid(column =0, row = 2)
+                sc_rating = ttk.LabeledScale(dlg, from_ = 0, to = 5)
+                sc_rating.value = b.get_rating()
+                sc_rating.grid(column=1, row=2)
+
+                but_annuller = ttk.Button(dlg, text="Annuller", command=close)
+                but_annuller.grid(column=1,row=3)
+                but_ok = ttk.Button(dlg, text="Gem ændringer", command=change_book)
+                but_ok.grid(column=0,row=3)
     #Tilføjer til kurven (nedenstående liste/treeview, altså indkøbskurven).
     def add_basket(self):
         curItem = self.db_view.item(self.db_view.focus())['values'] # Vælger værdierne for den nuværende markeret bog
@@ -202,19 +202,24 @@ class Book_gui(ttk.Frame):
                 
         for child in self.buy_view.get_children(): 
             self.buy_view.delete(child)
-
+            
            
     def build_GUI(self):
         # Variabel definitioner
         self.samlet_pris = 0
+
 
         # Frame grid
         bottom_frame = ttk.Frame(self)
         bottom_frame.pack(side=tk.BOTTOM, fill=tk.Y)
         knap_frame = ttk.Frame(self)
         knap_frame.pack(side=tk.TOP, fill=tk.Y)
+
         top_frame = ttk.Frame(bottom_frame)
         top_frame.pack(side=tk.TOP)
+                                #create image label
+        self.imageWidget = tk.Label(root, image=None)
+        self.imageWidget.pack(side=tk.RIGHT, padx=50)
         data_frame = ttk.Frame(bottom_frame)
         data_frame.pack(side=tk.TOP, fill=tk.Y)
         buy_frame = ttk.Frame(bottom_frame)
@@ -226,7 +231,8 @@ class Book_gui(ttk.Frame):
         buy_frame_info = ttk.Frame(buy_frame_label)
         buy_frame_info.pack(side=tk.LEFT, fill=tk.Y)
         self.pack(padx=20, pady=2)
-               
+
+
 
         # Buttons
         self.find_button = ttk.Button(knap_frame, text='Find', command=self.opdater_tabel) # Søgeknappen
@@ -289,10 +295,6 @@ class Book_gui(ttk.Frame):
         self.buy_view.pack(side=tk.TOP, pady=1, fill=tk.BOTH)
         self.label_samlet_pris = ttk.Label(buy_frame_info, text="Samlet pris: 0 kr.")
         self.label_samlet_pris.pack(side=tk.BOTTOM)
-
-        #create image label
-        self.imageWidget = tk.Label(root, image=None)
-        self.imageWidget.pack()
 
 
         ####################################################################
