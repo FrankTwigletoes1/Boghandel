@@ -1,13 +1,11 @@
 import csv
 
 class Book:
-
     def __init__(self):
         self.titel = ""
         self.forfatter = ""
         self.aarstal = 0
-        #[1 stjerne, 2 stjerner, 3 stjerner...]
-        self.ratings = [0,0,0,0,0]
+        self.ratings = [0,0,0,0,0] #[1 stjerne, 2 stjerner, 3 stjerner...]
         self.id = -1
         self.count = 0
         self.imgurl = None
@@ -18,7 +16,12 @@ class Book:
         for i in range(0,len(self.ratings)):
             r += (i+1)*self.ratings[i]
 
-        return r/sum(self.ratings)
+        return str(round(r/sum(self.ratings),2))
+
+    #Beregner prisen af bogen baseret på stjerner ganget med 50.
+    def get_pris(self):
+        book_pris = float(self.get_rating()) * 50
+        return int(round(book_pris))
 
     def give_rating(self, r):
         if 0 <= r <= 5:
@@ -26,9 +29,7 @@ class Book:
         else:
             print("Fejl, rating er ikke gyldig")
 
-
 class Books_data:
-
     def __init__(self, samples = False):
         '''
         Variablen samples bestemmer om alle bøger skal indlæses,
@@ -98,3 +99,4 @@ class Books_data:
                 book.forfatter = b.forfatter
                 book.titel = b.titel
                 book.aarstal = b.aarstal
+
