@@ -109,25 +109,25 @@ class Book_gui(ttk.Frame):
         def close():
             BHRTopLevel.destroy()
             BHRTopLevel.update()
-        bottom_frame = ttk.Frame(self)
-        bottom_frame.pack(side=tk.BOTTOM, fill=tk.Y)
-        data_frame = ttk.Frame(bottom_frame)
-        data_frame.pack(side=tk.TOP, fill=tk.Y)
-
 
         BHRTopLevel = tk.Toplevel()
         TLtitel = ttk.Label(BHRTopLevel, text='Købshistorik')
         
         
-        self.BH_view = ttk.Treeview(data_frame, column=("column1", "column2", "column3", "column4"), show='headings')
-        self.BH_view.heading("#1", text="dsa")
-        self.BH_view.heading("#2", text="dsa")
-        self.BH_view.heading("#3", text="das")
-        self.BH_view.heading("#4", text="das")
+        self.BH_view = ttk.Treeview(BHRTopLevel, column=("column1", "column2", "column3"), show='headings')
+        self.BH_view.heading("#1", text="ID")
+        self.BH_view.heading("#2", text="Pris")
+        self.BH_view.heading("#3", text="Titel")
         self.BH_view.column("#1", width=50)
         self.BH_view.column("#2", width=50)
-        self.BH_view.column("#3", width=50)
-        self.BH_view.column("#4", width=50)
+        self.BH_view.column("#3", width=250)
+        self.BH_view.pack()
+        for item in GBH():
+            print(item)
+            item = item.split(',')
+            self.BH_view.insert("", tk.END, values=(item[0], item[1], item[2]))
+            
+
 
     def rediger_bog(self):
         def change_book():
@@ -151,8 +151,6 @@ class Book_gui(ttk.Frame):
 
         if len(curItem) > 0:
             b = self.data.get_book(curItem[4])
-
-            dlg = tk.Toplevel()
 
             lbl_titel = ttk.Label(dlg, text='Titel')
             lbl_titel.grid(column =0, row = 0)
@@ -200,10 +198,10 @@ class Book_gui(ttk.Frame):
                 dictNames =  ["bookId", "price", "titel"]
                 writer = csv.DictWriter(csvfile, fieldnames=dictNames)
                 print(buyData)
-                writer.writeheader()
                 writer.writerow({'bookId': buyData[0], 'price': buyData[3], 'titel': buyData[1]})
                 
-        for child in self.buy_view.get_children(): self.buy_view.delete(child)
+        for child in self.buy_view.get_children(): 
+            self.buy_view.delete(child)
 
            
     def build_GUI(self):
@@ -228,7 +226,8 @@ class Book_gui(ttk.Frame):
         buy_frame_info = ttk.Frame(buy_frame_label)
         buy_frame_info.pack(side=tk.LEFT, fill=tk.Y)
         self.pack(padx=20, pady=2)
-        
+               
+
         # Buttons
         self.find_button = ttk.Button(knap_frame, text='Find', command=self.opdater_tabel) # Søgeknappen
         self.find_button.pack(side=tk.RIGHT)
@@ -291,10 +290,10 @@ class Book_gui(ttk.Frame):
         self.label_samlet_pris = ttk.Label(buy_frame_info, text="Samlet pris: 0 kr.")
         self.label_samlet_pris.pack(side=tk.BOTTOM)
 
-
         #create image label
         self.imageWidget = tk.Label(root, image=None)
         self.imageWidget.pack()
+
 
         ####################################################################
         #items = ["Titel", "Forfatter", "Årstal", "Rating", "ID", "Count"]
@@ -305,7 +304,7 @@ class Book_gui(ttk.Frame):
         #####################################################################
 
 root = tk.Tk()
-root.geometry("800x600")
+root.geometry("800x700")
 app = Book_gui(root)
 app.master.title('Bøger')
 app.mainloop()
